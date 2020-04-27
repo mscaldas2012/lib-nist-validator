@@ -28,23 +28,23 @@ class NistReport {
     }
 
     private fun transferCounts( map: HashMap<String, AtomicInteger> ):SummaryCount {
-        val counts = SummaryCount()
-        counts.structure = (map["structure"]!! as AtomicInteger).get()
-        counts.valueset = (map["value-set"]!!as AtomicInteger).get()
-        counts.content = (map["content"]!!as AtomicInteger).get()
-        return counts
+        return SummaryCount(
+       map["structure"]?.get() ?:0,
+        map["value-set"]?.get() ?:0,
+       map["content"]?.get() ?:0
+        )
     }
 
 
 }
 
-class SummaryCount {
+class SummaryCount(
+    var structure: Int  ,
     @JsonProperty  ("value-set")
     @SerializedName("value-set")
-    var valueset: Int = 0
-    var structure: Int = 0
-    var content: Int = 0
-}
+    var valueset: Int,
+    var content: Int
+)
 
 class Entries {
     var structure = ArrayList<Entry>()

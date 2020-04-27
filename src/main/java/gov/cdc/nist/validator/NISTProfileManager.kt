@@ -63,15 +63,14 @@ class NISTProfileManager(val profile: String) {
     }
 
     fun validate(hl7Message: String) {
-//        val msgId = validator.
+//        val msgId = validator.profile.messages.keySet().iterator()
 //        //val messageIds = profileX.getMessage(validator.)    //.messages().keySet().iterator()
-//        //while (messageIds.hasNext()) {
-//        //while (messageIds.hasNext()) {
 //        val msId = messageIds.next()
 //        val report = validator.check(hl7Message, msId)
-//        val filteredResults: Map<String, Any> = filter(report)
     }
+\
 
+    //val filteredResults: Map<String, Any> = filter(report)
     private fun filter(report: Report?): Map<String, Any> {
         TODO("Not yet implemented")
     }

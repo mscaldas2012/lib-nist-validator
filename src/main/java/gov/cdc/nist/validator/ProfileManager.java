@@ -87,8 +87,8 @@ public class ProfileManager {
 
 
     protected  Map<String, Object> filter(Report report)  {
-        Map<String, AtomicInteger>  erCount = new HashMap();
-        Map<String, AtomicInteger>  warCount = new HashMap();
+        Map<String, AtomicInteger>  erCount = new HashMap<>();
+        Map<String, AtomicInteger>  warCount = new HashMap<>();
         Map<String, List<Entry>> valMap = report.getEntries();
         Map<String, Object> filteredMap = new HashMap<>();
         Map<String, Object> validationResultsMap = new HashMap<>();

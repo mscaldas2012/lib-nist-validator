@@ -9,7 +9,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <springfox-version>2.5.0</springfox-version>
-        <scala.verion>2.11.5</scala.verion>
+        <scala.verion>2.13.0</scala.verion>
         <kotlin.version>1.3.72</kotlin.version>
         <nist.version>1.4.2</nist.version>
     </properties>
