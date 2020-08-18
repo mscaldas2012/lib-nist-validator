@@ -1,4 +1,4 @@
-image: mscaldas/aws-k8s-build:5
+image: maven:3-openjdk-11
 
 variables:
   DOCKER_DRIVER: overlay2
