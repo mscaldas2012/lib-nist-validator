@@ -16,4 +16,4 @@ stages:
 deploy-nexus:
   stage: deploy-nexus
   script:
-    - mvn
+    - mvn --settings ./.m2/settings.xml clean deploy
