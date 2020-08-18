@@ -68,7 +68,7 @@ class NISTProfileManager(val profile: String) {
 //        val msId = messageIds.next()
 //        val report = validator.check(hl7Message, msId)
     }
-\
+
 
     //val filteredResults: Map<String, Any> = filter(report)
     private fun filter(report: Report?): Map<String, Any> {

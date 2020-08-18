@@ -72,11 +72,11 @@ public class ProfileManager {
         NistReport nist = new NistReport();
         HashMap errors = (HashMap) filteredReport.get("entries");
         if (errors.containsKey("structure"))
-            nist.getEntries().setStructure((ArrayList<gov.cdc.nist.validator.Entry>) errors.get("structure"));
+            nist.getEntries().setStructure((ArrayList<Entry>) errors.get("structure"));
         if (errors.containsKey("value-set"))
-            nist.getEntries().setValueset((ArrayList<gov.cdc.nist.validator.Entry>) errors.get("value-set"));
+            nist.getEntries().setValueset((ArrayList<Entry>) errors.get("value-set"));
         if (errors.containsKey("content"))
-            nist.getEntries().setContent((ArrayList<gov.cdc.nist.validator.Entry>) errors.get("content"));
+            nist.getEntries().setContent((ArrayList<Entry>) errors.get("content"));
 
         nist.transferErrorCounts ((HashMap) filteredReport.get("error-count"));
         nist.transferWarningCounts((HashMap) filteredReport.get("warning-count"));

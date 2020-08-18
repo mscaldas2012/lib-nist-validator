@@ -1,9 +1,9 @@
 package gov.cdc.nist.validator
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.google.gson.annotations.SerializedName
+import gov.nist.validation.report.Entry
 import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -53,14 +53,14 @@ class Entries {
     @SerializedName("value-set")
     var valueset  = ArrayList<Entry>()
 }
-
-@JsonIgnoreProperties(ignoreUnknown = true)
-class Entry {
-     var line = 0
-     var column = 0
-     var path: String? = null
-     var description: String? = null
-     var category: String? = null
-     var classification: String? = null
-
-}
+//
+//@JsonIgnoreProperties(ignoreUnknown = true)
+//class Entry {
+//     var line = 0
+//     var column = 0
+//     var path: String? = null
+//     var description: String? = null
+//     var category: String? = null
+//     var classification: String? = null
+//
+//}

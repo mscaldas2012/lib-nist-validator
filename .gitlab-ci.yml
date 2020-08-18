@@ -1,0 +1,19 @@
+image: mscaldas/aws-k8s-build:5
+
+variables:
+  DOCKER_DRIVER: overlay2
+  APP_NAME: ${CI_PROJECT_NAME}
+  K8_INT_NAMESPACE: daart
+  REPOSITORY_URL: gitlab.sandbox.aimsplatform.com:4567/eip/whiterabbit/
+  DOCKER_TLS_CERTDIR: ""
+
+
+stages:
+  - build-jar
+  - deploy-nexus
+
+
+deploy-nexus:
+  stage: deploy-nexus
+  script:
+    - mvn
