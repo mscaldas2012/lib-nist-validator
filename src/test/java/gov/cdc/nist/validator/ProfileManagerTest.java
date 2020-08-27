@@ -19,7 +19,7 @@ public class ProfileManagerTest {
 
     @Test
     public void validate() {
-        ProfileManager nistValidator = new ProfileManager("/TEST_PROF");
+        ProfileManager nistValidator = new ProfileManager(new ResourceFileFetcher(), "/TEST_PROF");
 
         try {
             var nist = nistValidator.validate(getTestFile());

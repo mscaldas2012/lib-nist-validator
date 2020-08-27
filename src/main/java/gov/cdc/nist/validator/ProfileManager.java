@@ -35,17 +35,18 @@ public class ProfileManager {
 
     private  SyncHL7Validator validator;
 
-    public  ProfileManager(String profile)  {
+
+    public  ProfileManager(ProfileFetcher profileFetcher, String profile)  {
         logger.info("AUDIT:: Loading profile " + profile);
-        InputStream profileXML = getResourceFile(profile + "/PROFILE.xml");
+        InputStream profileXML = profileFetcher.getFileAsInputStream(profile + "/PROFILE.xml");
         // The get() at the end will throw an exception if something goes wrong
         Profile profileX = XMLDeserializer.deserialize(profileXML).get();
         // get ConformanceContext
-        InputStream contextXML1 = getResourceFile(profile + "/CONSTRAINTS.xml");
+        InputStream contextXML1 = profileFetcher.getFileAsInputStream(profile + "/CONSTRAINTS.xml");
         // The second conformance context XML file
         List<InputStream> confContexts = Collections.singletonList(contextXML1);
         try {
-            InputStream contextXML2 = getResourceFile(profile + "/PREDICATES.xml");
+            InputStream contextXML2 = profileFetcher.getFileAsInputStream(profile + "/PREDICATES.xml");
             confContexts.add(contextXML2);
             //Add predicates to confContexts...
         } catch (Exception e) {
@@ -56,7 +57,7 @@ public class ProfileManager {
         // The get() at the end will throw an exception if something goes wrong
         ConformanceContext conformanceContext = DefaultConformanceContext.apply(confContexts).get();
         // get ValueSetLibrary
-        InputStream vsLibXML = getResourceFile(profile + "/VALUESETS.xml");
+        InputStream vsLibXML = profileFetcher.getFileAsInputStream(profile + "/VALUESETS.xml");
         ValueSetLibrary valueSetLibrary = ValueSetLibraryImpl.apply(vsLibXML).get();
 
         validator = new SyncHL7Validator(profileX, valueSetLibrary, conformanceContext);
@@ -118,10 +119,6 @@ public class ProfileManager {
         validationResultsMap.put("entries", filteredMap);
         validationResultsMap.put("status", status);
         return validationResultsMap;
-    }
-
-    private InputStream getResourceFile(String fileName) {
-        return ProfileManager.class.getResourceAsStream(fileName);
     }
 
 
