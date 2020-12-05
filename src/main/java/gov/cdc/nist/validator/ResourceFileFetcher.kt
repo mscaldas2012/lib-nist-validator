@@ -9,6 +9,8 @@ import java.io.InputStream
  * @Author Marcelo Caldas mcq1@cdc.gov
  */
 class ResourceFileFetcher: ProfileFetcher {
+
+
     override fun getFile(file: String): String {
         TODO("Not yet implemented")
     }

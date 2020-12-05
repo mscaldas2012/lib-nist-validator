@@ -1,21 +1,11 @@
 image: maven:3-openjdk-11
 
-variables:
-  DOCKER_DRIVER: overlay2
-  APP_NAME: ${CI_PROJECT_NAME}
-  K8_INT_NAMESPACE: daart
-  REPOSITORY_URL: gitlab.sandbox.aimsplatform.com:4567/eip/whiterabbit/
-  DOCKER_TLS_CERTDIR: ""
-
-
 stages:
-  - build-jar
+  - build
+  - test
   - deploy-nexus
 
-
-deploy-nexus:
-  stage: deploy-nexus
-  script:
-    - mvn --settings ./.m2/settings.xml clean deploy
-  only:
-    - dev
+include:
+  - project: biblioteca/ci_cd-templates
+    file: .gitlab-ci-java-maven.yml
+    ref: release-1.0.0

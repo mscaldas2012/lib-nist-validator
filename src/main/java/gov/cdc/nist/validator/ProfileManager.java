@@ -36,31 +36,35 @@ public class ProfileManager {
     private  SyncHL7Validator validator;
 
 
-    public  ProfileManager(ProfileFetcher profileFetcher, String profile)  {
-        logger.info("AUDIT:: Loading profile " + profile);
-        InputStream profileXML = profileFetcher.getFileAsInputStream(profile + "/PROFILE.xml");
-        // The get() at the end will throw an exception if something goes wrong
-        Profile profileX = XMLDeserializer.deserialize(profileXML).get();
-        // get ConformanceContext
-        InputStream contextXML1 = profileFetcher.getFileAsInputStream(profile + "/CONSTRAINTS.xml");
-        // The second conformance context XML file
-        List<InputStream> confContexts = Collections.singletonList(contextXML1);
+    public  ProfileManager(ProfileFetcher profileFetcher, String profile) throws InvalidFileException {
         try {
-            InputStream contextXML2 = profileFetcher.getFileAsInputStream(profile + "/PREDICATES.xml");
-            confContexts.add(contextXML2);
-            //Add predicates to confContexts...
-        } catch (Exception e) {
-            logger.fine("No Predicate Available for group " + profile + ". Ignoring Predicate.");
-            //No predicate available... ignore file...
+            logger.info("AUDIT:: Loading profile " + profile);
+            InputStream profileXML = profileFetcher.getFileAsInputStream(profile + "/PROFILE.xml");
+            // The get() at the end will throw an exception if something goes wrong
+            Profile profileX = XMLDeserializer.deserialize(profileXML).get();
+            // get ConformanceContext
+            InputStream contextXML1 = profileFetcher.getFileAsInputStream(profile + "/CONSTRAINTS.xml");
+            // The second conformance context XML file
+            List<InputStream> confContexts = Collections.singletonList(contextXML1);
+            try {
+                InputStream contextXML2 = profileFetcher.getFileAsInputStream(profile + "/PREDICATES.xml");
+                confContexts.add(contextXML2);
+                //Add predicates to confContexts...
+            } catch (Exception e) {
+                logger.fine("No Predicate Available for group " + profile + ". Ignoring Predicate.");
+                //No predicate available... ignore file...
+            }
+
+            // The get() at the end will throw an exception if something goes wrong
+            ConformanceContext conformanceContext = DefaultConformanceContext.apply(confContexts).get();
+            // get ValueSetLibrary
+            InputStream vsLibXML = profileFetcher.getFileAsInputStream(profile + "/VALUESETS.xml");
+            ValueSetLibrary valueSetLibrary = ValueSetLibraryImpl.apply(vsLibXML).get();
+
+            validator = new SyncHL7Validator(profileX, valueSetLibrary, conformanceContext);
+        } catch (Error e) {
+            throw new InvalidFileException("Unble to parse profile file..." + e.getMessage());
         }
-
-        // The get() at the end will throw an exception if something goes wrong
-        ConformanceContext conformanceContext = DefaultConformanceContext.apply(confContexts).get();
-        // get ValueSetLibrary
-        InputStream vsLibXML = profileFetcher.getFileAsInputStream(profile + "/VALUESETS.xml");
-        ValueSetLibrary valueSetLibrary = ValueSetLibraryImpl.apply(vsLibXML).get();
-
-        validator = new SyncHL7Validator(profileX, valueSetLibrary, conformanceContext);
     }
 
 

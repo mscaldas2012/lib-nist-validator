@@ -30,7 +30,7 @@ class NistReport {
     private fun transferCounts( map: HashMap<String, AtomicInteger> ):SummaryCount {
         return SummaryCount(
        map["structure"]?.get() ?:0,
-        map["value-set"]?.get() ?:0,
+            map["value-set"]?.get() ?:0,
        map["content"]?.get() ?:0
         )
     }
@@ -38,12 +38,12 @@ class NistReport {
 
 }
 
-class SummaryCount(
-    var structure: Int  ,
+data class SummaryCount(
+    val structure: Int  ,
     @JsonProperty  ("value-set")
     @SerializedName("value-set")
-    var valueset: Int,
-    var content: Int
+    val valueset: Int,
+    val content: Int
 )
 
 class Entries {

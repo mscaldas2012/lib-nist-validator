@@ -10,13 +10,11 @@
         <module name="lib-nist-validator" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="lib-nist-validator" target="11" />
-    </bytecodeTargetLevel>
+    <bytecodeTargetLevel target="11" />
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="lib-nist-validator" options="-parameters" />
+      <module name="lib-nist-validator" options="" />
     </option>
   </component>
 </project>

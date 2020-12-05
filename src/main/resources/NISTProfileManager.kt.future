@@ -64,7 +64,7 @@ class NISTProfileManager(val profile: String) {
 
     fun validate(hl7Message: String) {
 //        val msgId = validator.profile.messages.keySet().iterator()
-//        //val messageIds = profileX.getMessage(validator.)    //.messages().keySet().iterator()
+//        val messageIds = profileX.getMessage(validator.)    //.messages().keySet().iterator()
 //        val msId = messageIds.next()
 //        val report = validator.check(hl7Message, msId)
     }
