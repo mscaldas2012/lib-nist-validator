@@ -58,7 +58,16 @@ public class ProfileManagerTest {
         } catch (InvalidFileException e) {
             System.out.println("Exception properly handled.");
         }
+    }
 
+    @Test
+    public void testIncompleteProfile() {
+        try {
+            ProfileManager nistValidator = new ProfileManager(new ResourceFileFetcher(), "/INCOMPLETE_PROFILE");
+        } catch (InvalidFileException e) {
+            System.out.println("e.getMessage() = " + e.getMessage());
+            assert(true);
+        }
     }
 
     private String getTestFile(String filename) throws IOException {

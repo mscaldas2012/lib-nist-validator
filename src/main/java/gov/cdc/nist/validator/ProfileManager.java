@@ -10,16 +10,16 @@ import hl7.v2.validation.content.ConformanceContext;
 import hl7.v2.validation.content.DefaultConformanceContext;
 import hl7.v2.validation.vs.ValueSetLibrary;
 import hl7.v2.validation.vs.ValueSetLibraryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.collection.Iterator;
 
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 
 
 public class ProfileManager {
-    private Logger logger = Logger.getLogger(ProfileManager.class.getName());
 
     private static final String VALID_MESSAGE_STATUS = "VALID_MESSAGE";
     private static final String STRUCTURE_ERRORS_STATUS = "STRUCTURE_ERRORS";
@@ -33,10 +33,11 @@ public class ProfileManager {
     private static final String error_count = "error-count";
     private static final String warning_count = "warning-count";
 
-    private  SyncHL7Validator validator;
+    private final SyncHL7Validator validator;
 
 
     public  ProfileManager(ProfileFetcher profileFetcher, String profile) throws InvalidFileException {
+        Logger logger = LoggerFactory.getLogger(ProfileManager.class.getName());
         try {
             logger.info("AUDIT:: Loading profile " + profile);
             InputStream profileXML = profileFetcher.getFileAsInputStream(profile + "/PROFILE.xml");
@@ -45,13 +46,13 @@ public class ProfileManager {
             // get ConformanceContext
             InputStream contextXML1 = profileFetcher.getFileAsInputStream(profile + "/CONSTRAINTS.xml");
             // The second conformance context XML file
-            List<InputStream> confContexts = Collections.singletonList(contextXML1);
+            List<InputStream> confContexts = new ArrayList<>(Collections.singletonList(contextXML1));
             try {
                 InputStream contextXML2 = profileFetcher.getFileAsInputStream(profile + "/PREDICATES.xml");
                 confContexts.add(contextXML2);
                 //Add predicates to confContexts...
             } catch (Exception e) {
-                logger.fine("No Predicate Available for group " + profile + ". Ignoring Predicate.");
+                logger.debug("No Predicate Available for group " + profile + ". Ignoring Predicate.");
                 //No predicate available... ignore file...
             }
 
@@ -63,7 +64,8 @@ public class ProfileManager {
 
             validator = new SyncHL7Validator(profileX, valueSetLibrary, conformanceContext);
         } catch (Error e) {
-            throw new InvalidFileException("Unble to parse profile file..." + e.getMessage());
+            logger.warn("UNABLE TO READ PROFILE: " + profile + " with error:\n" + e.getMessage());
+            throw new InvalidFileException("Unable to parse profile file..." + e.getMessage());
         }
     }
 
@@ -124,6 +126,4 @@ public class ProfileManager {
         validationResultsMap.put("status", status);
         return validationResultsMap;
     }
-
-
 }

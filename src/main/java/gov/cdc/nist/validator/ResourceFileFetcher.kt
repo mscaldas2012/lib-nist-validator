@@ -10,16 +10,22 @@ import java.io.InputStream
  */
 class ResourceFileFetcher: ProfileFetcher {
 
-
+    @Throws(InvalidFileException::class)
     override fun getFile(file: String): String {
         TODO("Not yet implemented")
     }
 
+    @Throws(InvalidFileException::class)
     override fun getFileAsInputStream(file: String): InputStream {
         return getResourceFile(file)
     }
 
+
     private fun getResourceFile(fileName: String): InputStream {
-        return ResourceFileFetcher::class.java.getResourceAsStream(fileName)
+        try {
+            return ResourceFileFetcher::class.java.getResourceAsStream(fileName)
+        } catch (e: NullPointerException) {
+            throw InvalidFileException("Unable to load profile for $fileName")
+        }
     }
 }
