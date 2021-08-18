@@ -1,0 +1,14 @@
+image: maven:3-openjdk-11
+
+variables:
+  RELEASE_VERSION:  1.1.0-SNAPSHOT
+stages:
+  - build
+  - test
+  - deploy-nexus
+  - tagrepo
+
+include:
+  - project: biblioteca/ci_cd-templates
+    file: .gitlab-ci-java-maven.yml
+    ref: release-1.0.0
