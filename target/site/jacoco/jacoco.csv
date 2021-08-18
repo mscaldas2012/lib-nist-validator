@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+lib-nist-validator,gov.cdc.nist.validator,InvalidFileException,0,4,0,0,0,2,0,1,0,1
+lib-nist-validator,gov.cdc.nist.validator,NistReport,14,70,3,3,0,13,5,9,2,9
+lib-nist-validator,gov.cdc.nist.validator,ProfileManager,17,291,9,11,3,63,8,7,0,5
+lib-nist-validator,gov.cdc.nist.validator,VALID_PROFILE_CONFIGS,0,44,0,0,0,2,0,1,0,1
+lib-nist-validator,gov.cdc.nist.validator,Entries,6,42,0,0,0,4,2,5,2,5
+lib-nist-validator,gov.cdc.nist.validator,SummaryCount,0,21,0,0,0,4,0,4,0,4
+lib-nist-validator,gov.cdc.nist.validator,ResourceFileFetcher,20,32,0,0,1,6,1,3,1,3

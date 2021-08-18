@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProfileManager.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">lib-nist-validator</a> &gt; <a href="index.source.html" class="el_package">gov.cdc.nist.validator</a> &gt; <span class="el_source">ProfileManager.java</span></div><h1>ProfileManager.java</h1><pre class="source lang-java linenums">package gov.cdc.nist.validator;
+
+
+import gov.nist.validation.report.Entry;
+import gov.nist.validation.report.Report;
+import hl7.v2.profile.Profile;
+import hl7.v2.profile.XMLDeserializer;
+import hl7.v2.validation.SyncHL7Validator;
+import hl7.v2.validation.content.ConformanceContext;
+import hl7.v2.validation.content.DefaultConformanceContext;
+import hl7.v2.validation.vs.ValueSetLibrary;
+import hl7.v2.validation.vs.ValueSetLibraryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import scala.collection.Iterator;
+
+import java.io.InputStream;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+
+public class ProfileManager {
+
+    private static final String VALID_MESSAGE_STATUS = &quot;VALID_MESSAGE&quot;;
+    private static final String STRUCTURE_ERRORS_STATUS = &quot;STRUCTURE_ERRORS&quot;;
+    private static final String CONTENT_ERRORS_STATUS = &quot;CONTENT_ERRORS&quot;;
+    private static final String ERROR_CLASSIFICATION = &quot;Error&quot;;
+    private static final String WARNING_CLASSIFICATION = &quot;Warning&quot;;
+
+    private static final String VALUE_SET_ENTRIES = &quot;value-set&quot;;
+    private static final String STRUCTURE_ENTRIES = &quot;structure&quot;;
+    private static final String CONTENT_ENTRIES = &quot;content&quot;;
+    private static final String error_count = &quot;error-count&quot;;
+    private static final String warning_count = &quot;warning-count&quot;;
+
+    private final SyncHL7Validator validator;
+
+
+<span class="fc" id="L39">    public  ProfileManager(ProfileFetcher profileFetcher, String profile) throws InvalidFileException {</span>
+<span class="fc" id="L40">        Logger logger = LoggerFactory.getLogger(ProfileManager.class.getName());</span>
+        try {
+<span class="fc" id="L42">            logger.info(&quot;AUDIT:: Loading profile &quot; + profile);</span>
+<span class="fc" id="L43">            InputStream profileXML = profileFetcher.getFileAsInputStream(profile + &quot;/PROFILE.xml&quot;);</span>
+            // The get() at the end will throw an exception if something goes wrong
+<span class="fc" id="L45">            Profile profileX = XMLDeserializer.deserialize(profileXML).get();</span>
+            // get ConformanceContext
+<span class="fc" id="L47">            InputStream contextXML1 = profileFetcher.getFileAsInputStream(profile + &quot;/CONSTRAINTS.xml&quot;);</span>
+            // The second conformance context XML file
+<span class="fc" id="L49">            List&lt;InputStream&gt; confContexts = new ArrayList&lt;&gt;(Collections.singletonList(contextXML1));</span>
+            try {
+<span class="fc" id="L51">                InputStream contextXML2 = profileFetcher.getFileAsInputStream(profile + &quot;/PREDICATES.xml&quot;);</span>
+<span class="fc" id="L52">                confContexts.add(contextXML2);</span>
+                //Add predicates to confContexts...
+<span class="nc" id="L54">            } catch (Exception e) {</span>
+<span class="nc" id="L55">                logger.debug(&quot;No Predicate Available for group &quot; + profile + &quot;. Ignoring Predicate.&quot;);</span>
+                //No predicate available... ignore file...
+<span class="fc" id="L57">            }</span>
+
+            // The get() at the end will throw an exception if something goes wrong
+<span class="fc" id="L60">            ConformanceContext conformanceContext = DefaultConformanceContext.apply(confContexts).get();</span>
+            // get ValueSetLibrary
+<span class="fc" id="L62">            InputStream vsLibXML = profileFetcher.getFileAsInputStream(profile + &quot;/VALUESETS.xml&quot;);</span>
+<span class="fc" id="L63">            ValueSetLibrary valueSetLibrary = ValueSetLibraryImpl.apply(vsLibXML).get();</span>
+
+<span class="fc" id="L65">            validator = new SyncHL7Validator(profileX, valueSetLibrary, conformanceContext);</span>
+<span class="fc" id="L66">        } catch (Error e) {</span>
+<span class="fc" id="L67">            logger.warn(&quot;UNABLE TO READ PROFILE: &quot; + profile + &quot; with error:\n&quot; + e.getMessage());</span>
+<span class="fc" id="L68">            throw new InvalidFileException(&quot;Unable to parse profile file...&quot; + e.getMessage());</span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">    }</span>
+
+
+    public NistReport validate(String hl7Message) throws Exception {
+<span class="fc" id="L74">        Iterator&lt;String&gt; messageIds = validator.profile().messages().keySet().iterator();</span>
+<span class="fc" id="L75">        String msId = messageIds.next();</span>
+<span class="fc" id="L76">        Report report = validator.check(hl7Message, msId);</span>
+<span class="fc" id="L77">        Map filteredReport =   filter(report);</span>
+
+<span class="fc" id="L79">        NistReport nist = new NistReport();</span>
+<span class="fc" id="L80">        HashMap errors = (HashMap) filteredReport.get(&quot;entries&quot;);</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (errors.containsKey(&quot;structure&quot;))</span>
+<span class="fc" id="L82">            nist.getEntries().setStructure((ArrayList&lt;Entry&gt;) errors.get(&quot;structure&quot;));</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (errors.containsKey(&quot;value-set&quot;))</span>
+<span class="fc" id="L84">            nist.getEntries().setValueset((ArrayList&lt;Entry&gt;) errors.get(&quot;value-set&quot;));</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (errors.containsKey(&quot;content&quot;))</span>
+<span class="fc" id="L86">            nist.getEntries().setContent((ArrayList&lt;Entry&gt;) errors.get(&quot;content&quot;));</span>
+
+<span class="fc" id="L88">        nist.transferErrorCounts ((HashMap) filteredReport.get(&quot;error-count&quot;));</span>
+<span class="fc" id="L89">        nist.transferWarningCounts((HashMap) filteredReport.get(&quot;warning-count&quot;));</span>
+
+<span class="fc" id="L91">        nist.setStatus((String) filteredReport.get(&quot;status&quot;));</span>
+<span class="fc" id="L92">        return nist;</span>
+    }
+
+
+    protected  Map&lt;String, Object&gt; filter(Report report)  {
+<span class="fc" id="L97">        Map&lt;String, AtomicInteger&gt;  erCount = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L98">        Map&lt;String, AtomicInteger&gt;  warCount = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L99">        Map&lt;String, List&lt;Entry&gt;&gt; valMap = report.getEntries();</span>
+<span class="fc" id="L100">        Map&lt;String, Object&gt; filteredMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L101">        Map&lt;String, Object&gt; validationResultsMap = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L102">        valMap.forEach((k, v) -&gt; {</span>
+<span class="fc" id="L103">            erCount.put(k, new AtomicInteger());</span>
+<span class="fc" id="L104">            warCount.put(k, new AtomicInteger());</span>
+<span class="fc" id="L105">            List&lt;Entry&gt; filteredContent = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L106">            v.forEach(val -&gt; {</span>
+<span class="pc bpc" id="L107" title="1 of 4 branches missed.">                if (val.getClassification().equals(ERROR_CLASSIFICATION) || val.getClassification().equals(WARNING_CLASSIFICATION)){</span>
+<span class="fc" id="L108">                    filteredContent.add(val);</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">                    if(val.getClassification().equals(WARNING_CLASSIFICATION))</span>
+<span class="nc" id="L110">                        warCount.get(k).getAndIncrement();</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">                    if(val.getClassification().equals(ERROR_CLASSIFICATION))</span>
+<span class="fc" id="L112">                        erCount.get(k).getAndIncrement();</span>
+                }
+<span class="fc" id="L114">            });</span>
+<span class="fc" id="L115">            filteredMap.put(k, filteredContent);</span>
+<span class="fc" id="L116">        });</span>
+<span class="fc" id="L117">        String status = VALID_MESSAGE_STATUS;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if (erCount.get(STRUCTURE_ENTRIES).get() &gt; 0) {</span>
+<span class="fc" id="L119">            status = STRUCTURE_ERRORS_STATUS;</span>
+<span class="pc bpc" id="L120" title="3 of 4 branches missed.">        } else if (erCount.get(CONTENT_ENTRIES).get() &gt; 0 || erCount.get(VALUE_SET_ENTRIES).get() &gt; 0) {</span>
+<span class="fc" id="L121">            status = CONTENT_ERRORS_STATUS;</span>
+        }
+<span class="fc" id="L123">        validationResultsMap.put(error_count, erCount);</span>
+<span class="fc" id="L124">        validationResultsMap.put(warning_count, warCount);</span>
+<span class="fc" id="L125">        validationResultsMap.put(&quot;entries&quot;, filteredMap);</span>
+<span class="fc" id="L126">        validationResultsMap.put(&quot;status&quot;, status);</span>
+<span class="fc" id="L127">        return validationResultsMap;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
