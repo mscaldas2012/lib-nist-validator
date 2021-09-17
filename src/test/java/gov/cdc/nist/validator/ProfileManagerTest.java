@@ -18,7 +18,7 @@ public class ProfileManagerTest {
             ProfileManager nistValidator = new ProfileManager(new ResourceFileFetcher(), "/TEST_PROF");
             //NISTProfileManager nistValidator = new NISTProfileManager("/TEST_PROF");
 
-            var nist = nistValidator.validate(getTestFile("hl7TestMessage.txt"));
+            NistReport nist = nistValidator.validate(getTestFile("hl7TestMessage.txt"));
             System.out.println("nist.getStatus() = " + nist.getStatus());
             System.out.println("nist.getErrorCounts() = " + nist.getErrorCounts());
             System.out.println("nist.getErrorCounts().getStructure() = " + nist.getErrorCounts().getStructure());
@@ -37,7 +37,7 @@ public class ProfileManagerTest {
                 ProfileManager nistValidator = new ProfileManager(new ResourceFileFetcher(), "/TEST_PROF");
                 //NISTProfileManager nistValidator = new NISTProfileManager("/TEST_PROF");
 
-                var nist = nistValidator.validate(getTestFile("hl7StructureValid.txt"));
+                NistReport nist = nistValidator.validate(getTestFile("hl7StructureValid.txt"));
                 System.out.println("nist.getStatus() = " + nist.getStatus());
                 System.out.println("nist.getErrorCounts() = " + nist.getErrorCounts());
                 System.out.println("nist.getErrorCounts().getStructure() = " + nist.getErrorCounts().getStructure());

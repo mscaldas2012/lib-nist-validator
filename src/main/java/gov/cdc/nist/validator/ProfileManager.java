@@ -1,6 +1,5 @@
 package gov.cdc.nist.validator;
 
-
 import gov.nist.validation.report.Entry;
 import gov.nist.validation.report.Report;
 import hl7.v2.profile.Profile;
@@ -35,7 +34,6 @@ public class ProfileManager {
 
     private final SyncHL7Validator validator;
 
-
     public  ProfileManager(ProfileFetcher profileFetcher, String profile) throws InvalidFileException {
         Logger logger = LoggerFactory.getLogger(ProfileManager.class.getName());
         try {
@@ -68,7 +66,6 @@ public class ProfileManager {
             throw new InvalidFileException("Unable to parse profile file..." + e.getMessage());
         }
     }
-
 
     public NistReport validate(String hl7Message) throws Exception {
         Iterator<String> messageIds = validator.profile().messages().keySet().iterator();

@@ -3,15 +3,15 @@
     <groupId>gov.cdc.ncezid</groupId>
     <artifactId>lib-nist-validator</artifactId>
     <name>lib-nist-validator</name>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <scala.verion>2.13.0</scala.verion>
+        <scala.verion>2.12.10</scala.verion>
         <kotlin.version>1.4.20</kotlin.version>
-        <nist.version>1.4.2</nist.version>
+        <nist.version>1.5.0</nist.version>
         <jackson.version>2.12.0</jackson.version>
     </properties>
 
@@ -188,7 +188,7 @@
             <exclusions>
                 <exclusion>
                     <groupId>ogr.scala-lang.modules</groupId>
-                    <artifactId>scala-xml_2.11</artifactId>
+                    <artifactId>scala-xml_2.12</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.scala-lang</groupId>
